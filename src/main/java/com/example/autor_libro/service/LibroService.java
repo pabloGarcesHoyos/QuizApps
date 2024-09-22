@@ -1,7 +1,10 @@
 package com.example.autor_libro.service;
 
+import com.example.autor_libro.dto.LibroDto;
 import com.example.autor_libro.Entity.Libro;
+import com.example.autor_libro.Entity.Autor;
 import com.example.autor_libro.repository.LibroRepository;
+import com.example.autor_libro.repository.AutorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,27 +17,55 @@ public class LibroService {
     @Autowired
     private LibroRepository libroRepository;
 
-    public Optional<Libro> findById(Long id) {
-        return libroRepository.findById(id);
+    @Autowired
+    private AutorRepository autorRepository;
+
+    public boolean eliminarLibro(Long id) {
+        libroRepository.deleteById(id);
+        return true;
     }
 
-    public Libro save(Libro libro) {
+    public Libro buscarLibro(Long id) {
+        return libroRepository.findById(id).orElse(null);
+    }
+
+    public Libro crearLibro(LibroDto libroDto) {
+        Libro libro = new Libro();
+        libro.setTitulo(libroDto.getTitulo());
+        libro.setGenero(libroDto.getGenero());
+
+        Optional<Autor> autorOptional = autorRepository.findByNombre(libroDto.getAutor());
+        if (autorOptional.isPresent()) {
+            libro.setAutor(autorOptional.get());
+        } else {
+            throw new RuntimeException("Autor no encontrado");
+        }
+
         return libroRepository.save(libro);
     }
 
-    public void deleteById(Long id) {
-        libroRepository.deleteById(id);
+    public boolean actualizarLibro(Long id, LibroDto libroDto) {
+        Optional<Libro> optionalLibro = libroRepository.findById(id);
+
+        if (optionalLibro.isPresent()) {
+            Libro libroAActualizar = optionalLibro.get();
+            libroAActualizar.setTitulo(libroDto.getTitulo());
+            libroAActualizar.setGenero(libroDto.getGenero());
+
+            Optional<Autor> autorOptional = autorRepository.findByNombre(libroDto.getAutor());
+            if (autorOptional.isPresent()) {
+                libroAActualizar.setAutor(autorOptional.get());
+            } else {
+                throw new RuntimeException("Autor no encontrado");
+            }
+
+            libroRepository.save(libroAActualizar);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public Optional<Libro> update(Libro libro) {
-        return libroRepository.findById(libro.getId()).map(existingLibro -> {
-            libro.setId(existingLibro.getId());
-            Libro savedLibro = libroRepository.save(libro);
-            return savedLibro;
-        });
-    }
-
-    // Obtener todos los libros
     public List<Libro> findAll() {
         return libroRepository.findAll();
     }

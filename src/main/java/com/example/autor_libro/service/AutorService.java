@@ -1,5 +1,6 @@
 package com.example.autor_libro.service;
 
+import com.example.autor_libro.dto.AutorDto;
 import com.example.autor_libro.Entity.Autor;
 import com.example.autor_libro.repository.AutorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,24 +15,34 @@ public class AutorService {
     @Autowired
     private AutorRepository autorRepository;
 
-    public Optional<Autor> findById(Long id) {
-        return autorRepository.findById(id);
+    public boolean eliminarAutor(Long id) {
+        autorRepository.deleteById(id);
+        return true;
     }
 
-    public Autor save(Autor autor) {
+    public Autor buscarAutor(Long id) {
+        return autorRepository.findById(id).orElse(null);
+    }
+
+    public Autor crearAutor(AutorDto autorDto) {
+        Autor autor = new Autor();
+        autor.setNombre(autorDto.getNombre());
+        autor.setApellido(autorDto.getApellido());
         return autorRepository.save(autor);
     }
 
-    public void deleteById(Long id) {
-        autorRepository.deleteById(id);
-    }
+    public boolean actualizarAutor(Long id, AutorDto autorDto) {
+        Optional<Autor> optionalAutor = autorRepository.findById(id);
 
-    public Optional<Autor> update(Autor autor) {
-        return autorRepository.findById(autor.getId()).map(existingAutor -> {
-            autor.setId(existingAutor.getId());
-            Autor savedAutor = autorRepository.save(autor);
-            return savedAutor;
-        });
+        if (optionalAutor.isPresent()) {
+            Autor autorAActualizar = optionalAutor.get();
+            autorAActualizar.setNombre(autorDto.getNombre());
+            autorAActualizar.setApellido(autorDto.getApellido());
+            autorRepository.save(autorAActualizar);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public List<Autor> findAll() {

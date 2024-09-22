@@ -14,6 +14,9 @@ public class Autor {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
+    @Column(name = "apellido", nullable = false)
+    private String apellido;
+
     @Column(name = "nacionalidad")
     private String nacionalidad;
 
@@ -25,17 +28,20 @@ public class Autor {
         super();
     }
 
-    public Autor(Long id, String nombre, String nacionalidad) {
+    public Autor(Long id, String nombre, String apellido, String nacionalidad) {
         this.id = id;
         this.nombre = nombre;
+        this.apellido = apellido;
         this.nacionalidad = nacionalidad;
     }
 
-    public Autor(String nombre, String nacionalidad) {
+    public Autor(String nombre, String apellido, String nacionalidad) {
         this.nombre = nombre;
+        this.apellido = apellido;
         this.nacionalidad = nacionalidad;
     }
 
+    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -50,6 +56,14 @@ public class Autor {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
     public String getNacionalidad() {

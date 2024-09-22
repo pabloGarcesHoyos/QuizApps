@@ -20,7 +20,7 @@ public class Libro {
     private int paginas;
 
     @ManyToOne
-    @JoinColumn(name = "autor_id")
+    @JoinColumn(name = "autor_id", nullable = false)
     private Autor autor;
 
     // Constructores
